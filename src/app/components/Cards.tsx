@@ -1,35 +1,31 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
 
 export default function WritingInspirationDatabase() {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center">
+        <div className="mb-8 flex justify-center items-center">
           <div className="text-purple-600 mr-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z"
-                fill="currentColor"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-            </svg>
+            
+            <Image src="/Vector.png" alt="crown vector" width={50} height={50}/>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Find Writing Inspiration in Our Data Base</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Find Writing Inspiration in Our Data Base</h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Document Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:w-2/3">
             {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
+              <div key={index} className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-2">Lorem ipsum dolor sit amet consectetur.</h2>
                 <p className="text-sm text-gray-600 mb-4">
                   Lorem ipsum dolor sit amet consectetur. Morbi integer tempus odio ut lacus pulvinar. Purus in eget
                   vitae placerat lorem nam. Maecenas incidunt aliquam pretium eu ornare. At ultricies porttitor massa
                   sem. Mauris leo venenatis.
                 </p>
+                <hr /> <br />
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center text-purple-600">
                     <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,7 +56,7 @@ export default function WritingInspirationDatabase() {
           </div>
 
           {/* Filter Panel */}
-          <div className="bg-white rounded-lg shadow-sm p-6 lg:w-1/3">
+          <div className="bg-white rounded-lg shadow-sm p-6 lg:w-1/3 max-h-fit">
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Type of work</label>
@@ -134,7 +130,7 @@ export default function WritingInspirationDatabase() {
         </div>
 
         {/* Pagination */}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 max-w-[70%] flex justify-center">
           <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <a
               href="#"

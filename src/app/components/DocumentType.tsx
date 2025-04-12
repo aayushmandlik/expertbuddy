@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useState } from "react"
+import Image from "next/image"
 
 export default function DocumentsByType() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -34,19 +35,12 @@ export default function DocumentsByType() {
   }
 
   return (
-    <div className="bg-gray-100 py-8 px-4 rounded-lg">
-      <div className="mb-6 flex items-center">
+    <div className="bg-gray-100 py-8 px-4 rounded-lg max-w-[70%]">
+      <div className="mb-6 flex justify-center items-center">
         <div className="text-purple-600 mr-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z"
-              fill="currentColor"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
+           <Image src="/Vector.png" alt="crown vector" width={50} height={50}/>
         </div>
-        <h2 className="text-xl font-bold text-gray-900">Documents by Type</h2>
+        <h2 className="text-3xl font-bold text-gray-900">Documents by Type</h2>
       </div>
 
       <div className="grid grid-cols-3 gap-3">

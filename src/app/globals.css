@@ -7,7 +7,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: white;
+  background: var(--color-gray-100);
 }
 
 body {

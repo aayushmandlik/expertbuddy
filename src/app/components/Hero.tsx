@@ -3,8 +3,8 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-purple-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
+    <div className="bg-[#A414D5]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {/* Navigation Bar */}
         <div className="bg-white rounded-full py-3 px-6 flex items-center justify-between mb-16">
           <div className="flex items-center">
@@ -49,14 +49,14 @@ export default function Home() {
             {/* Search Bar */}
             <div className="relative">
               <div className="bg-white rounded-full flex items-center overflow-hidden">
-                <div className="flex-grow pl-6">
+                <div className="flex-grow ml-5 p-2">
                   <input
                     type="text"
                     placeholder="Find any type of work, topic, etc."
                     className="w-full py-4 focus:outline-none text-gray-700"
                   />
                 </div>
-                <button className="bg-gray-900 text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-colors">
+                <button className="bg-gray-900 text-white px-8 py-4 mr-2 rounded-full hover:bg-gray-800 transition-colors">
                   Search
                 </button>
               </div>

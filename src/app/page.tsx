@@ -8,10 +8,12 @@ export default function Home() {
   return (
    <div>
     <Hero />
+    <div className="px-24">
     <Cards />
     <PriceCalculator />
     <DocumentsByType />
     <CustomOrderForm />
+    </div>
    </div>
   );
 }

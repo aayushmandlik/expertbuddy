@@ -17,7 +17,7 @@ export default function CustomOrderForm() {
   }
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 flex justify-center max-w-[70%]">
     <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-3xl p-6 shadow-lg max-w-xl mx-auto">
       <h2 className="text-white text-2xl font-bold mb-4">
         Can't find the right project for you? Place a custom order right now!
