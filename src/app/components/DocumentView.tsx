@@ -1,5 +1,7 @@
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import AuthModal from "./AuthModal";
 
 interface DocumentViewProps {
   document: Document;
@@ -26,6 +28,14 @@ interface Document {
 
 export default function DocumentView({ document, onBack }: DocumentViewProps) {
   const [showAnswers, setShowAnswers] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+
+  const handleUnlockClick = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8 relative">
@@ -60,62 +70,66 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                 {/* Document Preview */}
                 <div className="relative mb-8">
                   <div className="aspect-[3/4] bg-gray-50 rounded-lg p-6 relative overflow-hidden">
-                    {/* Blurred Content Overlay */}
-                    <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center z-10">
-                      <div className="w-16 h-16 bg-purple-100 rounded-full mb-4 flex items-center justify-center">
-                        <svg
-                          className="w-8 h-8 text-purple-600"
-                          viewBox="0 0 24 24"
-                          fill="none"
+                    {!isAuthenticated && (
+                      <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center z-10">
+                        <div className="w-16 h-16 bg-purple-100 rounded-full mb-4 flex items-center justify-center">
+                          <svg
+                            className="w-8 h-8 text-purple-600"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M12 15V3M12 15L8 11M12 15L16 11"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M2 17L2.621 19.485C2.72915 19.9177 2.97882 20.3018 3.33033 20.5763C3.68184 20.8508 4.11501 20.9999 4.561 21H19.439C19.885 20.9999 20.3182 20.8508 20.6697 20.5763C21.0212 20.3018 21.2708 19.9177 21.379 19.485L22 17"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">
+                          Sign Up To View The Full Document!
+                        </h3>
+                        <p className="text-gray-600 text-center mb-6 max-w-sm px-4">
+                          Get instant access to this document and thousands more
+                          when you sign up
+                        </p>
+                        <button
+                          onClick={handleUnlockClick}
+                          className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors flex items-center gap-2"
                         >
-                          <path
-                            d="M12 15V3M12 15L8 11M12 15L16 11"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M2 17L2.621 19.485C2.72915 19.9177 2.97882 20.3018 3.33033 20.5763C3.68184 20.8508 4.11501 20.9999 4.561 21H19.439C19.885 20.9999 20.3182 20.8508 20.6697 20.5763C21.0212 20.3018 21.2708 19.9177 21.379 19.485L22 17"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                          <svg
+                            className="w-5 h-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          Sign Up
+                        </button>
                       </div>
-                      <h3 className="text-xl font-bold mb-2">
-                        Sign Up To View The Full Document!
-                      </h3>
-                      <p className="text-gray-600 text-center mb-6 max-w-sm px-4">
-                        Get instant access to this document and thousands more
-                        when you sign up
-                      </p>
-                      <button className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        Sign Up
-                      </button>
-                    </div>
-                    {/* Sample Document Content (Blurred) */}
+                    )}
+                    {/* Sample Document Content */}
                     <div className="h-full space-y-2">
                       {Array(20)
                         .fill(0)
@@ -123,7 +137,10 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                           <div
                             key={i}
                             className="h-2 bg-gray-200 rounded w-full"
-                            style={{ width: `${Math.random() * 40 + 60}%` }}
+                            style={{
+                              width: `${Math.random() * 40 + 60}%`,
+                              filter: !isAuthenticated ? "blur(4px)" : "none",
+                            }}
                           />
                         ))}
                     </div>
@@ -135,8 +152,12 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold">Answers (2)</h2>
                     <button
-                      onClick={() => setShowAnswers(!showAnswers)}
-                      className="text-purple-600"
+                      onClick={() =>
+                        isAuthenticated && setShowAnswers(!showAnswers)
+                      }
+                      className={`text-purple-600 ${
+                        !isAuthenticated && "opacity-50 cursor-not-allowed"
+                      }`}
                     >
                       <ChevronDown
                         className={`h-5 w-5 transform transition-transform ${
@@ -146,7 +167,7 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                     </button>
                   </div>
 
-                  {showAnswers && (
+                  {showAnswers && isAuthenticated && (
                     <div className="space-y-6">
                       {[1, 2].map((answer) => (
                         <div key={answer} className="bg-gray-50 rounded-lg p-6">
@@ -181,6 +202,20 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                       ))}
                     </div>
                   )}
+
+                  {!isAuthenticated && (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 mb-4">
+                        Sign in to view answers
+                      </p>
+                      <button
+                        onClick={handleUnlockClick}
+                        className="text-purple-600 font-medium hover:text-purple-700"
+                      >
+                        Sign In Now
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -190,7 +225,10 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
           <div className="lg:w-1/3">
             <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-8">
               {/* Unlock Button */}
-              <button className="w-full bg-purple-600 text-white py-3 rounded-full hover:bg-purple-700 transition-colors mb-6 flex items-center justify-center gap-2">
+              <button
+                onClick={handleUnlockClick}
+                className="w-full bg-purple-600 text-white py-3 rounded-full hover:bg-purple-700 transition-colors mb-6 flex items-center justify-center gap-2"
+              >
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 24 24"
@@ -212,7 +250,7 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                     strokeLinejoin="round"
                   />
                 </svg>
-                Unlock
+                {isAuthenticated ? "Unlocked" : "Unlock"}
               </button>
 
               {/* Features */}
@@ -341,6 +379,11 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
           </div>
         </div>
       </div>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
     </div>
   );
 }
