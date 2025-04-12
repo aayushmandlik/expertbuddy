@@ -1,13 +1,25 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
+import DocumentView from "./DocumentView";
 
 interface CardsProps {
   searchQuery: string;
+  onDocumentSelect: (document: Document) => void;
 }
 
 // Define types for our data
-interface Document {
+interface DocumentMetadata {
+  contentType: string;
+  level: string;
+  language: string;
+  referenceList: boolean;
+  formatting: string;
+  uploadedBy: string;
+}
+
+interface Document extends DocumentMetadata {
   id: string;
   title: string;
   description: string;
@@ -64,12 +76,19 @@ const SUBJECTS: Subject[] = [
 
 export default function WritingInspirationDatabase({
   searchQuery,
+  onDocumentSelect,
 }: CardsProps) {
   // Filter states with proper typing
   const [projectType, setProjectType] = useState<string>("all");
   const [subject, setSubject] = useState<string>("accounting");
   const [academicLevel, setAcademicLevel] = useState<string>("any");
   const [wordCount, setWordCount] = useState<number>(275);
+  const [isFiltering, setIsFiltering] = useState(false);
+
+  // View state management
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(
+    null
+  );
 
   // Enhanced sample data with all required properties
   const sampleData: Document[] = [
@@ -80,10 +99,16 @@ export default function WritingInspirationDatabase({
         "A comprehensive study of financial accounting principles and their application in modern business.",
       words: 514,
       pages: 2,
-      projectType: "essay",
-      subject: "accounting",
+      projectType: "thesis",
+      subject: "management",
       academicLevel: "undergraduate",
       dateAdded: "2024-03-10",
+      contentType: "User generated",
+      level: "High School",
+      language: "English",
+      referenceList: true,
+      formatting: "AMA",
+      uploadedBy: "Brandon Veteres",
     },
     {
       id: "2",
@@ -96,6 +121,12 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "masters",
       dateAdded: "2024-03-09",
+      contentType: "User generated",
+      level: "Master's",
+      language: "English",
+      referenceList: true,
+      formatting: "APA",
+      uploadedBy: "Jane Doe",
     },
     {
       id: "3",
@@ -108,6 +139,12 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "undergraduate",
       dateAdded: "2024-03-08",
+      contentType: "User generated",
+      level: "High School",
+      language: "English",
+      referenceList: false,
+      formatting: "MLA",
+      uploadedBy: "John Smith",
     },
     {
       id: "4",
@@ -120,6 +157,12 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "masters",
       dateAdded: "2024-03-07",
+      contentType: "User generated",
+      level: "Master's",
+      language: "English",
+      referenceList: true,
+      formatting: "Harvard",
+      uploadedBy: "Emily Johnson",
     },
     {
       id: "5",
@@ -132,6 +175,12 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "phd",
       dateAdded: "2024-03-06",
+      contentType: "User generated",
+      level: "Ph.D.",
+      language: "English",
+      referenceList: true,
+      formatting: "Chicago",
+      uploadedBy: "Michael Brown",
     },
     {
       id: "6",
@@ -144,6 +193,12 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "phd",
       dateAdded: "2024-03-05",
+      contentType: "User generated",
+      level: "Ph.D.",
+      language: "English",
+      referenceList: true,
+      formatting: "Oxford",
+      uploadedBy: "Sophia Davis",
     },
     {
       id: "7",
@@ -156,6 +211,12 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "high-school",
       dateAdded: "2024-03-04",
+      contentType: "User generated",
+      level: "High School",
+      language: "English",
+      referenceList: false,
+      formatting: "MLA",
+      uploadedBy: "James Wilson",
     },
     {
       id: "8",
@@ -168,10 +229,16 @@ export default function WritingInspirationDatabase({
       subject: "accounting",
       academicLevel: "masters",
       dateAdded: "2024-03-03",
+      contentType: "User generated",
+      level: "Master's",
+      language: "English",
+      referenceList: true,
+      formatting: "Harvard",
+      uploadedBy: "Isabella Thompson",
     },
   ];
 
-  // Enhanced filter logic with proper type checking
+  // Enhanced filter logic with proper type checking and debounce
   const filteredData = sampleData.filter((item) => {
     // Search query filter
     const matchesSearch =
@@ -202,9 +269,44 @@ export default function WritingInspirationDatabase({
     );
   });
 
-  // Handle filter changes
-  const handleWordCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWordCount(Number(e.target.value));
+  // Handle filter changes with animation
+  const handleFilterChange = (
+    type: "project" | "subject" | "academic" | "words",
+    value: string | number
+  ) => {
+    setIsFiltering(true);
+
+    switch (type) {
+      case "project":
+        setProjectType(value as string);
+        break;
+      case "subject":
+        setSubject(value as string);
+        break;
+      case "academic":
+        setAcademicLevel(value as string);
+        break;
+      case "words":
+        setWordCount(value as number);
+        break;
+    }
+
+    // Reset filtering state after a short delay
+    setTimeout(() => setIsFiltering(false), 300);
+  };
+
+  // Reset all filters
+  const handleResetFilters = () => {
+    setIsFiltering(true);
+    setProjectType("all");
+    setAcademicLevel("any");
+    setWordCount(275);
+    setSubject("accounting");
+    setTimeout(() => setIsFiltering(false), 300);
+  };
+
+  const handleViewDocument = (document: Document) => {
+    onDocumentSelect(document);
   };
 
   return (
@@ -241,70 +343,101 @@ export default function WritingInspirationDatabase({
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Document Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:w-2/3">
-            {filteredData.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl shadow-sm p-6">
-                <h2 className="text-lg font-semibold mb-2">{item.title}</h2>
-                <p className="text-sm text-gray-600 mb-4">{item.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
-                    {
-                      PROJECT_TYPES.find((pt) => pt.id === item.projectType)
-                        ?.name
-                    }
-                  </span>
-                  <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
-                    {
-                      ACADEMIC_LEVELS.find((al) => al.id === item.academicLevel)
-                        ?.name
-                    }
-                  </span>
-                </div>
-                <hr /> <br />
-                <div className="flex justify-between text-sm">
-                  <div className="flex items-center text-purple-600">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M19.5 3H4.5C3.4 3 2.5 3.9 2.5 5V19C2.5 20.1 3.4 21 4.5 21H19.5C20.6 21 21.5 20.1 21.5 19V5C21.5 3.9 20.6 3 19.5 3ZM19.5 19H4.5V5H19.5V19Z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M6.5 7H17.5V9H6.5V7ZM6.5 11H17.5V13H6.5V11ZM6.5 15H13.5V17H6.5V15Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <span>Words: {item.words}</span>
+          <div className="lg:w-2/3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredData.map((item) => (
+                <div
+                  key={item.id}
+                  className={`bg-white rounded-2xl shadow-sm p-6 transition-all duration-300 ${
+                    isFiltering
+                      ? "opacity-50 scale-95"
+                      : "opacity-100 scale-100"
+                  }`}
+                >
+                  <h2 className="text-lg font-semibold mb-2">{item.title}</h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {item.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+                      {
+                        PROJECT_TYPES.find((pt) => pt.id === item.projectType)
+                          ?.name
+                      }
+                    </span>
+                    <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+                      {
+                        ACADEMIC_LEVELS.find(
+                          (al) => al.id === item.academicLevel
+                        )?.name
+                      }
+                    </span>
                   </div>
-                  <div className="flex items-center text-purple-600">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                  <hr className="mb-4" />
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-4 text-sm text-gray-600">
+                      <div className="flex items-center">
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M19.5 3H4.5C3.4 3 2.5 3.9 2.5 5V19C2.5 20.1 3.4 21 4.5 21H19.5C20.6 21 21.5 20.1 21.5 19V5C21.5 3.9 20.6 3 19.5 3ZM19.5 19H4.5V5H19.5V19Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M6.5 7H17.5V9H6.5V7ZM6.5 11H17.5V13H6.5V11ZM6.5 15H13.5V17H6.5V15Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span>Words: {item.words}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H13V17H7V15Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span>Pages: {item.pages}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleViewDocument(item)}
+                      className="text-purple-600 hover:text-purple-700 font-medium"
                     >
-                      <path
-                        d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H13V17H7V15Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <span>Pages: {item.pages}</span>
+                      View Document
+                    </button>
                   </div>
                 </div>
+              ))}
+            </div>
+            {filteredData.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">
+                  No results match your filters
+                </p>
+                <button
+                  onClick={handleResetFilters}
+                  className="mt-4 text-purple-600 hover:text-purple-700 font-medium"
+                >
+                  Reset all filters
+                </button>
               </div>
-            ))}
+            )}
           </div>
 
           {/* Filter Panel */}
-          <div className="bg-white rounded-lg shadow-sm p-6 lg:w-1/3 max-h-fit">
+          <div className="lg:w-1/3 bg-white p-6 border-l border-gray-200">
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -314,7 +447,9 @@ export default function WritingInspirationDatabase({
                   <select
                     className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 rounded-md appearance-none"
                     value={projectType}
-                    onChange={(e) => setProjectType(e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("project", e.target.value)
+                    }
                   >
                     {PROJECT_TYPES.map((type) => (
                       <option key={type.id} value={type.id}>
@@ -336,7 +471,9 @@ export default function WritingInspirationDatabase({
                   <select
                     className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 rounded-md appearance-none"
                     value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("subject", e.target.value)
+                    }
                   >
                     {SUBJECTS.map((subj) => (
                       <option key={subj.id} value={subj.id}>
@@ -358,7 +495,9 @@ export default function WritingInspirationDatabase({
                   <select
                     className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 rounded-md appearance-none"
                     value={academicLevel}
-                    onChange={(e) => setAcademicLevel(e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("academic", e.target.value)
+                    }
                   >
                     {ACADEMIC_LEVELS.map((level) => (
                       <option key={level.id} value={level.id}>
@@ -382,7 +521,9 @@ export default function WritingInspirationDatabase({
                     min="275"
                     max="550000"
                     value={wordCount}
-                    onChange={handleWordCountChange}
+                    onChange={(e) =>
+                      handleFilterChange("words", Number(e.target.value))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -395,94 +536,13 @@ export default function WritingInspirationDatabase({
               <div className="text-sm text-gray-600">1 Page = 275 Words</div>
 
               <button
-                onClick={() => {
-                  // Reset filters to default
-                  setProjectType("all");
-                  setAcademicLevel("any");
-                  setWordCount(275);
-                  setSubject("accounting");
-                }}
+                onClick={handleResetFilters}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-full transition duration-150 ease-in-out"
               >
                 Reset Filters
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Pagination */}
-        <div className="mt-8 max-w-[70%] flex justify-center">
-          <nav
-            className="inline-flex rounded-md shadow-sm -space-x-px"
-            aria-label="Pagination"
-          >
-            <a
-              href="#"
-              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">First</span>
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              First
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Back</span>
-              <ChevronLeft className="h-4 w-4" />
-              Back
-            </a>
-            <a
-              href="#"
-              aria-current="page"
-              className="relative inline-flex items-center px-4 py-2 border border-purple-500 bg-purple-600 text-sm font-medium text-white"
-            >
-              1
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              2
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              3
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              4
-            </a>
-            <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-              ...
-            </span>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              25
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Next</span>
-              Next
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Last</span>
-              Last
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </a>
-          </nav>
         </div>
       </div>
     </div>
