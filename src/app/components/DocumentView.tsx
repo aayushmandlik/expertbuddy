@@ -2,10 +2,14 @@ import { ChevronDown, ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import AuthModal from "./AuthModal";
+import Image from "next/image";
+import Cards from "./Cards"
 
 interface DocumentViewProps {
   document: Document;
   onBack: () => void;
+  searchQuery: string;
+  onDocumentSelect: (doc: Document) => void;
 }
 
 interface Document {
@@ -26,7 +30,7 @@ interface Document {
   uploadedBy: string;
 }
 
-export default function DocumentView({ document, onBack }: DocumentViewProps) {
+export default function DocumentView({ document, onBack, searchQuery, onDocumentSelect }: DocumentViewProps) {
   const [showAnswers, setShowAnswers] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { isAuthenticated, user } = useAuth();
@@ -60,7 +64,7 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
           <div className="lg:w-2/3">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               {/* Document Header */}
-              <div className="bg-purple-600 p-8 text-white">
+              <div className="bg-[#A414D5] p-8 text-white">
                 <h1 className="text-2xl font-bold mb-2">{document.title}</h1>
                 <p className="text-purple-100">{document.description}</p>
               </div>
@@ -72,77 +76,50 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                   <div className="aspect-[3/4] bg-gray-50 rounded-lg p-6 relative overflow-hidden">
                     {!isAuthenticated && (
                       <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center z-10">
-                        <div className="w-16 h-16 bg-purple-100 rounded-full mb-4 flex items-center justify-center">
-                          <svg
-                            className="w-8 h-8 text-purple-600"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M12 15V3M12 15L8 11M12 15L16 11"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M2 17L2.621 19.485C2.72915 19.9177 2.97882 20.3018 3.33033 20.5763C3.68184 20.8508 4.11501 20.9999 4.561 21H19.439C19.885 20.9999 20.3182 20.8508 20.6697 20.5763C21.0212 20.3018 21.2708 19.9177 21.379 19.485L22 17"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                        <div className="bg-white flex flex-col gap-5 justify-center items-center p-5 rounded-2xl">
+                        <div>
+                          <Image src="/doc.png" alt="doc" width={60} height={60} />
                         </div>
-                        <h3 className="text-xl font-bold mb-2">
+                        <h3 className="text-xl font-bold">
                           Sign Up To View The Full Document!
                         </h3>
-                        <p className="text-gray-600 text-center mb-6 max-w-sm px-4">
+                        <p className="text-gray-600 text-center max-w-sm px-4">
                           Get instant access to this document and thousands more
                           when you sign up
                         </p>
                         <button
                           onClick={handleUnlockClick}
-                          className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors flex items-center gap-2"
+                          className="bg-[#A414D5] text-white max-w-full px-24 py-3 rounded-full hover:bg-purple-700 transition-colors flex items-center gap-2"
                         >
-                          <svg
-                            className="w-5 h-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                           <svg
+                  className="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
                           Sign Up
                         </button>
+                        </div>
                       </div>
                     )}
                     {/* Sample Document Content */}
                     <div className="h-full space-y-2">
-                      {Array(20)
-                        .fill(0)
-                        .map((_, i) => (
-                          <div
-                            key={i}
-                            className="h-2 bg-gray-200 rounded w-full"
-                            style={{
-                              width: `${Math.random() * 40 + 60}%`,
-                              filter: !isAuthenticated ? "blur(4px)" : "none",
-                            }}
-                          />
-                        ))}
+                      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dignissimos nostrum maxime cum ipsum ex, fugit ad? Eos exercitationem asperiores autem sint enim. Sed neque voluptate ut dolor tempore quasi unde, iure magni maxime nesciunt accusantium sunt, id assumenda. At architecto ad nulla, ducimus harum itaque et necessitatibus. Totam corrupti nemo obcaecati perspiciatis dignissimos quia modi. Delectus neque, explicabo aut dicta cumque dolorum, eaque nostrum ab tenetur tempore rerum est! Maxime voluptatem quae suscipit exercitationem praesentium omnis tempore a, dolorem similique error eius deleniti nisi fuga illum adipisci harum sapiente porro nihil vitae cum quia? Dolor assumenda beatae tempora pariatur labore ipsam quia eius, animi fuga quasi. Doloribus, numquam consequuntur unde delectus iusto pariatur provident consequatur est sequi ea obcaecati commodi quam aspernatur? Animi mollitia vel corporis consectetur sunt. Deserunt omnis delectus veritatis error minima perferendis ex voluptas. Laboriosam, labore dignissimos debitis dolorum nemo consectetur neque fugiat quibusdam assumenda quas, sit saepe ipsam consequuntur amet officia iste maiores minus doloremque recusandae esse, sint inventore hic sunt. Ipsam, voluptate accusantium ut id quaerat dolores eum fugit unde hic! Accusamus quod temporibus laudantium totam placeat. Cumque qui dolorum excepturi, odit porro totam inventore amet odio harum, nesciunt rem! Molestiae, molestias. Qui animi reiciendis sunt, officiis quo nostrum voluptates enim odio dolorum, minus aliquam magni atque deserunt eveniet? Tempore cumque perspiciatis et consectetur hic ut odit necessitatibus iste porro accusantium! Qui veniam odio quisquam hic magnam dolor numquam? Nihil ab cumque sed aliquid rem recusandae, quibusdam deserunt. Ipsa facere animi minus recusandae incidunt vel earum, quasi delectus numquam. Sed iure reprehenderit odit. Vel, labore incidunt rerum commodi minima quis assumenda. Dolorem cupiditate sequi, sunt tempora officia maiores exercitationem quas corrupti, in tempore pariatur saepe voluptatum ipsum quaerat quis laborum magnam fugit est molestiae! Reiciendis, velit odio ipsa at animi expedita tempore minus placeat tenetur officiis repudiandae eaque harum distinctio commodi iusto deserunt? Pariatur, vero quisquam provident praesentium veritatis esse sint natus velit necessitatibus quam ipsa, nostrum, labore consectetur. </p>
                     </div>
                   </div>
                 </div>
@@ -187,11 +164,11 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
                           </div>
                           <div className="bg-white rounded-lg p-4 mb-4">
                             <p className="text-gray-600">
-                              Answer preview text goes here...
+                              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Est minima ratione, corrupti cupiditate quasi aliquid tempora nesciunt, voluptatum exercitationem eos rem ex dolor dolorum odio aspernatur quisquam suscipit! Rem, officiis?
                             </p>
                           </div>
                           <div className="flex gap-2">
-                            <button className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm hover:bg-purple-700 transition-colors">
+                            <button className="bg-[#A414D5] text-white px-4 py-2 rounded-full text-sm hover:bg-purple-700 transition-colors">
                               Plagiarism Check
                             </button>
                             <button className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 transition-colors">
@@ -227,7 +204,7 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
               {/* Unlock Button */}
               <button
                 onClick={handleUnlockClick}
-                className="w-full bg-purple-600 text-white py-3 rounded-full hover:bg-purple-700 transition-colors mb-6 flex items-center justify-center gap-2"
+                className="w-full bg-[#A414D5] text-white py-3 rounded-full hover:bg-purple-700 transition-colors mb-6 flex items-center justify-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -377,6 +354,16 @@ export default function DocumentView({ document, onBack }: DocumentViewProps) {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+           <div className="mt-10 mb-10 flex justify-center items-center">
+              <div className="text-purple-600 mr-2">
+                     <Image src="/Vector.png" alt="crown vector" width={50} height={50}/>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">Documents by Type</h2>
+            </div>
+            <Cards searchQuery={searchQuery}
+              onDocumentSelect={onDocumentSelect} />
         </div>
       </div>
 

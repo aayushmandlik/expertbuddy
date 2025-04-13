@@ -35,7 +35,7 @@ export default function DocumentsByType() {
   }
 
   return (
-    <div className="bg-gray-100 py-8 px-4 rounded-lg max-w-[70%]">
+    <div className="bg-gray-100 py-8 px-4 rounded-lg lg:max-w-[65%] max-w-screen">
       <div className="mb-6 flex justify-center items-center">
         <div className="text-purple-600 mr-2">
            <Image src="/Vector.png" alt="crown vector" width={50} height={50}/>

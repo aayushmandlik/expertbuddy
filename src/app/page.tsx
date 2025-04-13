@@ -49,9 +49,10 @@ export default function Home() {
         setSearchQuery={setSearchQuery}
         selectedDocument={selectedDocument}
       />
-      <div className="px-24">
+      <div className="lg:px-24 px-0">
         {selectedDocument ? (
-          <DocumentView document={selectedDocument} onBack={handleBackToList} />
+          <DocumentView document={selectedDocument} onBack={handleBackToList} searchQuery={searchQuery}
+          onDocumentSelect={handleDocumentSelect} />
         ) : (
           <>
             <Cards

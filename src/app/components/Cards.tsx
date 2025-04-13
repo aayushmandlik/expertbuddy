@@ -3,6 +3,8 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import DocumentView from "./DocumentView";
+import Pagination from "./Pagination";
+
 
 interface CardsProps {
   searchQuery: string;
@@ -84,6 +86,24 @@ export default function WritingInspirationDatabase({
   const [academicLevel, setAcademicLevel] = useState<string>("any");
   const [wordCount, setWordCount] = useState<number>(275);
   const [isFiltering, setIsFiltering] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+const totalPages = 25;
+
+const handlePageChange = (page: number) => {
+  setCurrentPage(page);
+
+  // Optionally, scroll to top after page change
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // If you're fetching new data, call your fetch function here
+  // fetchData(page);
+};
+
+  const isDefaultFilters =
+  projectType === "all" &&
+  subject === "accounting" &&
+  academicLevel === "any";
+
 
   // View state management
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -412,7 +432,12 @@ export default function WritingInspirationDatabase({
                       </div>
                     </div>
                     <button
-                      onClick={() => handleViewDocument(item)}
+                      onClick={() => {handleViewDocument(item)
+                        window.scrollTo({
+                          top: 0,
+                          behavior: 'smooth',
+                        })
+                      }}
                       className="text-purple-600 hover:text-purple-700 font-medium"
                     >
                       View Document
@@ -437,7 +462,7 @@ export default function WritingInspirationDatabase({
           </div>
 
           {/* Filter Panel */}
-          <div className="lg:w-1/3 bg-white p-6 border-l border-gray-200">
+          <div className="lg:w-1/3 bg-white p-6 border-l border-gray-200 max-h-fit rounded-2xl">
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -536,14 +561,27 @@ export default function WritingInspirationDatabase({
               <div className="text-sm text-gray-600">1 Page = 275 Words</div>
 
               <button
-                onClick={handleResetFilters}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-full transition duration-150 ease-in-out"
+                  onClick={() => {
+                    if (!isDefaultFilters) {
+                      // Reset filters
+                      setProjectType("all");
+                      setSubject("accounting");
+                      setAcademicLevel("any");
+                    }
+                    // If it's Apply, you could trigger filter logic here too (optional)
+                  }}
+                className="w-full bg-[#A414D5] hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-full transition duration-150 ease-in-out"
               >
-                Reset Filters
+               
+                {isDefaultFilters ? "Apply" : "Reset Filters"}
               </button>
+
             </div>
           </div>
         </div>
+        <Pagination  currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange} />
       </div>
     </div>
   );

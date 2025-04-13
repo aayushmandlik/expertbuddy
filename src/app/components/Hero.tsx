@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
+import { useAuth } from "../context/AuthContext"; // adjust the path accordingly
+import { Button, Menu } from "@headlessui/react"; // optional, but helps for dropdown UI
+import { UserCircleIcon } from "@heroicons/react/24/solid"; // or any icon you want
+import { useState } from "react";
+import AuthModal from "./AuthModal";
 
 interface HeroProps {
   searchQuery: string;
@@ -22,57 +27,97 @@ export default function Hero({
   selectedDocument,
 }: HeroProps) {
   // Common navigation bar component
-  const NavigationBar = () => (
-    <div className="bg-white rounded-full py-3 px-6 flex items-center justify-between mb-16">
-      <div className="flex items-center">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-            <svg
-              viewBox="0 0 24 24"
-              fill="white"
-              className="w-6 h-6"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-1 14h2v-3.34l.59.34c.37.21.78.34 1.21.4.01 0 .01-.01.02-.01.13.02.26.03.39.03.53 0 1.04-.11 1.53-.3.58-.23 1.1-.62 1.53-1.12.52-.62.85-1.39.93-2.2.02-.2.03-.4.03-.6 0-.92-.23-1.78-.64-2.53-.38-.7-.92-1.29-1.58-1.71-.6-.38-1.28-.63-2.01-.71-.23-.03-.47-.04-.71-.04-.24 0-.48.01-.71.04-.73.08-1.41.33-2.01.71-.66.42-1.2 1.01-1.58 1.71-.41.75-.64 1.61-.64 2.53 0 .2.01.4.03.6.08.81.41 1.58.93 2.2.43.5.95.89 1.53 1.12.49.19 1 .3 1.53.3.13 0 .26-.01.39-.03.01 0 .01.01.02.01.43-.06.84-.19 1.21-.4l.59-.34V16z" />
-            </svg>
+  const NavigationBar = () => {
+      const [showAuthModal, setShowAuthModal] = useState(false);
+    const { user, logout, isAuthenticated } = useAuth();
+    const handleUnlockClick = () => {
+      if (!isAuthenticated) {
+        setShowAuthModal(true);
+      }
+    };
+  
+    return (
+      <div className="bg-white rounded-full py-3 px-6 flex items-center justify-between mb-16">
+        <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="logo" width={30} height={30} />
+            <span className="text-[#A414D5] font-extrabold text-2xl">BUDDY</span>
           </div>
-          <span className="text-purple-600 font-bold text-2xl">BUDDY</span>
+        </div>
+  
+        <div className="flex items-center lg:gap-6 gap-0">
+          {!user ? (
+            <>
+              <Link href="#" className="text-gray-700 hover:text-purple-600 hidden lg:block">
+                Find Tutor
+              </Link>
+              <Link href="#" className="text-gray-700 hover:text-purple-600 hidden lg:block">
+                Become Tutor
+              </Link>
+              <Button onClick={handleUnlockClick} className="text-gray-700 hover:text-purple-600">
+                Sign In
+              </Button>
+              <Link
+                href="#"
+                className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors hidden lg:block"
+              >
+                Get Started For Free
+              </Link>
+            </>
+          ) : (
+            <>
+                    {/* Navigation Links */}
+      <div className="flex items-center space-x-6">
+        <a href="#" className="text-gray-600 hover:text-gray-800 hidden lg:block">StudyBank</a>
+        <a href="#" className="text-gray-600 hover:text-gray-800 hidden lg:block">Find Tutor</a>
+        <a href="#" className="text-gray-600 hover:text-gray-800 hidden lg:block">Homework</a>
+        <div className="flex items-center text-gray-400 border border-gray-300 rounded-md px-2 py-1 hidden lg:block">
+          <span className="text-orange-500">$</span>
+          <span className="ml-1">0 USD</span>
         </div>
       </div>
-      <div className="flex items-center gap-6">
-        <Link href="#" className="text-gray-700 hover:text-purple-600">
-          Find Tutor
-        </Link>
-        <Link href="#" className="text-gray-700 hover:text-purple-600">
-          Become Tutor
-        </Link>
-        <Link href="#" className="text-gray-700 hover:text-purple-600">
-          Sign In
-        </Link>
-        <Link
-          href="#"
-          className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors"
-        >
-          Get Started For Free
-        </Link>
+      
+      {/* Right Section */}
+      <div className="flex items-center gap-10">
+        <button className="bg-purple-100 text-purple-700 px-4 py-1 rounded-full text-sm font-medium hidden lg:block">
+          Refer a Friend
+        </button>
+        
+        <div className="flex items-center space-x-1 text-gray-600 hidden lg:block">
+          <span>English, USD</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <div className="relative group">
+              <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold cursor-pointer">
+                {user.name.charAt(0)}
+              </div>
+              <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+      </div>            
+            </>
+          )}
+        </div>
+        <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+              />
       </div>
-    </div>
-  );
+    );
+  };
+  
 
   if (selectedDocument) {
     return (
-      <div className="relative bg-purple-600">
-        {/* Background Pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'url("/pattern.png")',
-            backgroundSize: "200px",
-            backgroundRepeat: "repeat",
-            transform: "rotate(-45deg)",
-          }}
-        />
-
+      <div className="relative bg-[#A414D5] bg-[url('/your-pattern.png')] bg-blend-multiply bg-no-repeat bg-cover bg-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 relative">
           <NavigationBar />
 
@@ -102,12 +147,12 @@ export default function Hero({
   }
 
   return (
-    <div className="bg-[#A414D5]">
+    <div className="bg-[#A414D5] bg-[url('/pattern.png')] bg-blend-multiply bg-no-repeat bg-cover bg-center bg-gradient-to-r from-[#ffffff] to-[#ffffff]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <NavigationBar />
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="flex justify-between md:flex-row flex-col gap-8 items-center">
           <div className="text-white">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Accounting Homework
@@ -119,22 +164,32 @@ export default function Hero({
             </p>
 
             {/* Search Bar */}
-            <div className="relative">
-              <div className="bg-white rounded-full flex items-center overflow-hidden">
-                <div className="flex-grow ml-5 p-2">
-                  <input
-                    type="text"
-                    placeholder="Find any type of work, topic, etc."
-                    className="w-full py-4 focus:outline-none text-gray-700"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <button className="bg-gray-900 text-white px-8 py-4 mr-2 rounded-full hover:bg-gray-800 transition-colors">
-                  Search
-                </button>
-              </div>
-            </div>
+<div className="relative">
+  <div className="bg-white rounded-full flex items-center overflow-hidden">
+    
+    {/* Icon and Input Container */}
+    <div className="flex-grow ml-5 p-2 relative">
+      {/* Pure Tailwind Search Icon */}
+      <div className="absolute left-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center justify-center">
+        <div className="w-4 h-4 border-2 border-gray-400 rounded-full"></div>
+        <div className="w-2 h-0.5 bg-gray-400 rotate-35 origin-top-left mt-[10px] ml-[0px]"></div>
+      </div>
+
+      <input
+        type="text"
+        placeholder="Find any type of work, topic, etc."
+        className="w-full py-4 pl-10 pr-2 focus:outline-none text-gray-700 placeholder-gray-400"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+    </div>
+
+    <button className="bg-gray-900 text-white px-8 py-4 mr-2 rounded-full hover:bg-gray-800 transition-colors">
+      Search
+    </button>
+  </div>
+</div>
+
           </div>
 
           <div className="flex justify-center md:justify-end">
